@@ -1,23 +1,18 @@
 import { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import "./App.css";
-import styled from "styled-components";
-import { Earth } from "./components/earth";
+import { Earth, Loading } from "./components";
 
-const CanvasContainer = styled.div`
-  width: 100%;
-  height: 100%;
-`;
 
 function App() {
   return (
-    <CanvasContainer>
+    <div className="h-screen w-screen">
       <Canvas>
-        <Suspense fallback={null}>
+        <Suspense fallback={<Loading />}>
           <Earth />
         </Suspense>
       </Canvas>
-    </CanvasContainer>
+    </div>
   );
 }
 
