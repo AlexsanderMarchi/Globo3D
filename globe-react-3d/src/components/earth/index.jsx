@@ -10,12 +10,22 @@ import EarthDayMap from "../../assets/textures/8k_earth_daymap.jpg";
 import EarthNormalMap from "../../assets/textures/8k_earth_normal_map.jpg";
 import EarthSpecularMap from "../../assets/textures/8k_earth_specular_map.jpg";
 import EarthCloudsMap from "../../assets/textures/8k_earth_clouds.jpg";
+import EarthNightMap from "../../assets/textures/8k_earth_nightmap.jpg";
 
 export default function Earth(props) {
-  const [colorMap, normalMap, specularMap, cloudsMap] = useLoader(
+  const [colorMap, normalMap, specularMap, cloudsMap, nightMap] = useLoader(
     TextureLoader,
-    [EarthDayMap, EarthNormalMap, EarthSpecularMap, EarthCloudsMap]
+    [
+      EarthDayMap,
+      EarthNormalMap,
+      EarthSpecularMap,
+      EarthCloudsMap,
+      EarthNightMap,
+    ]
   );
+
+  //se mudar o valor pra true, o planeta fica de noite, ajustar valores no return e criar botao posteriormente
+  const [nightMapOn, setNightMapOn] = useState(false);
 
   const earthRef = useRef();
   const cloudsRef = useRef();
@@ -92,8 +102,8 @@ export default function Earth(props) {
 
   return (
     <>
-      <ambientLight intensity={10} />
-      {/* <pointLight color="#f6f3ea" position={[2, 0, 2]} intensity={10} /> */}
+      <ambientLight intensity={nightMapOn ? 20 : 5} />
+      <pointLight color="#f6f3ea" position={[2, 0, 2]} intensity={10} />
       <Stars
         radius={300}
         depth={70}
@@ -106,7 +116,7 @@ export default function Earth(props) {
         <sphereGeometry args={[1.007, 32, 32]} />
         <meshPhongMaterial
           map={cloudsMap}
-          opacity={0.3}
+          opacity={nightMapOn ? 0.01 : 0.3}
           depthWrite={true}
           transparent={true}
           side={THREE.DoubleSide}
@@ -116,10 +126,10 @@ export default function Earth(props) {
         <sphereGeometry args={[1, 32, 32]} />
         <meshPhongMaterial specularMap={specularMap} />
         <meshStandardMaterial
-          map={colorMap}
+          map={nightMapOn ? nightMap : colorMap}
           normalMap={normalMap}
           metalness={0.8}
-          roughness={0.7}
+          roughness={nightMapOn ? 1 : 0.7}
         />
         <OrbitControls
           enableZoom={true}

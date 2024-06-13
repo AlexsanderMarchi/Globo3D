@@ -7,8 +7,7 @@ function App() {
   return (
     <div className="h-screen w-screen">
       <Canvas>
-        {/* <Suspense fallback={<Loading />}> */}
-        <Suspense>
+        <Suspense fallback={<Loading />}>
           <Earth />
         </Suspense>
       </Canvas>
