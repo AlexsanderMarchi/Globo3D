@@ -37,13 +37,7 @@ export default function Earth(props) {
             response.data.address.country
           ) {
             const country = response.data.address.country;
-            console.log("COUNTRYYYY", country);
-
-            if (country === "Madagascar") {
-              console.log("Yes, Madagascar");
-            } else {
-              console.log("Not Madagascar");
-            }
+            console.log("Country: ", country);
           } else {
             console.log("Country information not found");
           }
@@ -55,22 +49,6 @@ export default function Earth(props) {
 
     fetchCountry();
   }, [selectedCountry]);
-  // useEffect(() => {
-  //   const fetchCountry = async () => {
-  //     if (
-  //       selectedCountry.lat < -12.56 &&
-  //       selectedCountry.lat > -25.46 &&
-  //       selectedCountry.lon < -42.91 &&
-  //       selectedCountry.lon > -50.85
-  //     ) {
-  //       console.log("Yes, Madagascar");
-  //     } else {
-  //       console.log("Not madagascar");
-  //     }
-  //   };
-
-  //   fetchCountry();
-  // }, [selectedCountry]);
 
   const handleClick = (event) => {
     const raycaster = new THREE.Raycaster();
@@ -92,24 +70,23 @@ export default function Earth(props) {
     }
   };
 
+  const invertLongitude = (lon) => {
+    return lon >= 0 ? -lon : Math.abs(lon);
+  };
+
   const pointToLatLong = (point) => {
     const radius = 1;
-    const phi = Math.acos(point.y / radius); // polar angle
-    let theta = Math.atan2(point.z, point.x); // azimuthal angle
+    const phi = Math.acos(point.y / radius);
+    let theta = Math.atan2(point.z, point.x);
 
-    // Convert theta to degrees and adjust to match typical longitude range
     let lat = 90 - (phi * 180) / Math.PI;
-    let lon = ((theta * 180) / Math.PI + 360) % 360; // Ensure lon is positive
+    let lon = (theta * 180) / Math.PI;
 
-    // Convert lon to range [-180, 180]
-    if (lon > 180) {
-      lon -= 360;
-    } else if (lon < -180) {
-      lon += 360;
-    }
+    lon = lon > 180 ? lon - 360 : lon;
+    lon = lon < -180 ? lon + 360 : lon;
 
-    // Invert lon if necessary
-    lon = lon > 0 ? lon - 360 : lon + 360;
+    lon = invertLongitude(lon);
+
     return { lat, lon };
   };
 
