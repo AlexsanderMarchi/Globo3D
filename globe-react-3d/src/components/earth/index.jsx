@@ -1,16 +1,16 @@
 import React, { useRef, useState, useEffect } from "react";
-import { useLoader } from "@react-three/fiber";
+import { useLoader , useFrame } from "@react-three/fiber";
 import { useThree } from "react-three-fiber";
 import { TextureLoader } from "three";
 import { OrbitControls, Stars } from "@react-three/drei";
 import * as THREE from "three";
 import axios from "axios";
-
 import EarthDayMap from "../../assets/textures/8k_earth_daymap.jpg";
 import EarthNormalMap from "../../assets/textures/8k_earth_normal_map.jpg";
 import EarthSpecularMap from "../../assets/textures/8k_earth_specular_map.jpg";
 import EarthCloudsMap from "../../assets/textures/8k_earth_clouds.jpg";
 import EarthNightMap from "../../assets/textures/8k_earth_nightmap.jpg";
+
 
 export default function Earth(props) {
   const [colorMap, normalMap, specularMap, cloudsMap, nightMap] = useLoader(
@@ -23,15 +23,15 @@ export default function Earth(props) {
       EarthNightMap,
     ]
   );
-
-  //se mudar o valor pra true, o planeta fica de noite, ajustar valores no return e criar botao posteriormente
-  const [nightMapOn, setNightMapOn] = useState(false);
-
+  
   const earthRef = useRef();
   const cloudsRef = useRef();
-
-  const [selectedCountry, setSelectedCountry] = useState(null);
+  const ambientLightRef = useRef();
   const { camera } = useThree();
+  
+  const [nightMapOn, setNightMapOn] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState(null);
+  
 
   useEffect(() => {
     const fetchCountry = async () => {
@@ -59,6 +59,12 @@ export default function Earth(props) {
 
     fetchCountry();
   }, [selectedCountry]);
+
+  useFrame(() => {
+    if (ambientLightRef.current) {
+      ambientLightRef.current.position.set(camera.position.x-0.3, camera.position.y, camera.position.z);
+    }
+  });
 
   const handleClick = (event) => {
     const raycaster = new THREE.Raycaster();
@@ -103,7 +109,7 @@ export default function Earth(props) {
   return (
     <>
       <ambientLight intensity={nightMapOn ? 20 : 5} />
-      <pointLight color="#f6f3ea" position={[2, 0, 2]} intensity={10} />
+      <pointLight ref={ambientLightRef} color="#f6f3ea" intensity={6} />
       <Stars
         radius={300}
         depth={70}
