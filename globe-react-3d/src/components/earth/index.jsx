@@ -1,18 +1,17 @@
-import React, { useRef, useState, useEffect } from "react";
-import { useLoader , useFrame } from "@react-three/fiber";
-import { useThree } from "react-three-fiber";
-import { TextureLoader } from "three";
 import { OrbitControls, Stars } from "@react-three/drei";
+import { useFrame, useLoader } from "@react-three/fiber";
+import React, { useEffect, useRef, useState } from "react";
+import { useThree } from "react-three-fiber";
 import * as THREE from "three";
-import axios from "axios";
+import { TextureLoader } from "three";
+import EarthCloudsMap from "../../assets/textures/8k_earth_clouds.jpg";
 import EarthDayMap from "../../assets/textures/8k_earth_daymap.jpg";
+import EarthNightMap from "../../assets/textures/8k_earth_nightmap.jpg";
 import EarthNormalMap from "../../assets/textures/8k_earth_normal_map.jpg";
 import EarthSpecularMap from "../../assets/textures/8k_earth_specular_map.jpg";
-import EarthCloudsMap from "../../assets/textures/8k_earth_clouds.jpg";
-import EarthNightMap from "../../assets/textures/8k_earth_nightmap.jpg";
+import { getDataForLat } from "../../connection";
 
-
-export default function Earth(props) {
+export default function Earth() {
   const [colorMap, normalMap, specularMap, cloudsMap, nightMap] = useLoader(
     TextureLoader,
     [
@@ -23,41 +22,21 @@ export default function Earth(props) {
       EarthNightMap,
     ]
   );
-  
   const earthRef = useRef();
   const cloudsRef = useRef();
   const ambientLightRef = useRef();
   const { camera } = useThree();
-  
   const [nightMapOn, setNightMapOn] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState(null);
   
 
   useEffect(() => {
-    const fetchCountry = async () => {
-      if (selectedCountry) {
-        const { lat, lon } = selectedCountry;
-        try {
-          const response = await axios.get(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=3`
-          );
-          if (
-            response.data &&
-            response.data.address &&
-            response.data.address.country
-          ) {
-            const country = response.data.address.country;
-            console.log("Country: ", country);
-          } else {
-            console.log("Country information not found");
-          }
-        } catch (error) {
-          console.error("Error fetching country data: ", error);
-        }
-      }
-    };
-
-    fetchCountry();
+    if (selectedCountry) {
+      const {lat, lon} = selectedCountry
+      getDataForLat(lat, lon).then(value => {
+        console.log(value)
+      })
+    }
   }, [selectedCountry]);
 
   useFrame(() => {
