@@ -32,9 +32,7 @@ export default function Earth() {
   useEffect(() => {
     if (selectedCountry) {
       const { lat, lon } = selectedCountry;
-      getDataForLat(lat, lon).then((value) => {
-        console.log(value);
-      });
+      getDataForLat(lat, lon);
     }
   }, [selectedCountry]);
 

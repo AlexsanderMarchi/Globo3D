@@ -1,6 +1,6 @@
 import { create } from 'apisauce';
 import CountryStore from '../../store/countryStore';
-
+import { getCountryData } from "../../connection";
 
 const api = create({
     baseURL: 'https://nominatim.openstreetmap.org'
@@ -14,11 +14,14 @@ async function getDataForLat(lat, long) {
         response.data.address.country
       ) {
         CountryStore.getState().addCountryStore(response.data.address.country);
+        await getCountryData(response.data.address.country);
         return response.data.address.country;
       } else {
-        console.log("Country information not found");
+        console.log("Country name not found");
         return null
       }
 }
 
-export default getDataForLat
+export default getDataForLat;
+
+

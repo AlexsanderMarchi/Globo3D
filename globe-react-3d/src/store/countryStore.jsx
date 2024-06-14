@@ -1,8 +1,11 @@
 import { create } from "zustand";
 
 const CountryStore = create((set) => ({
-  country: "",
-  addCountryStore: (newCountry) => set({ country: newCountry }),
+  countryName: "",
+  countryFetched: "",
+  addCountryStore: (newCountry) => set({ countryName: newCountry }),
+  countryFetchedStore: (newCountryData) =>
+    set({ countryFetched: newCountryData }),
 }));
 
 export default CountryStore;
