@@ -28,20 +28,23 @@ export default function Earth() {
   const { camera } = useThree();
   const [nightMapOn, setNightMapOn] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState(null);
-  
 
   useEffect(() => {
     if (selectedCountry) {
-      const {lat, lon} = selectedCountry
-      getDataForLat(lat, lon).then(value => {
-        console.log(value)
-      })
+      const { lat, lon } = selectedCountry;
+      getDataForLat(lat, lon).then((value) => {
+        console.log(value);
+      });
     }
   }, [selectedCountry]);
 
   useFrame(() => {
     if (ambientLightRef.current) {
-      ambientLightRef.current.position.set(camera.position.x-0.3, camera.position.y, camera.position.z);
+      ambientLightRef.current.position.set(
+        camera.position.x - 0.3,
+        camera.position.y,
+        camera.position.z
+      );
     }
   });
 
@@ -87,7 +90,7 @@ export default function Earth() {
 
   return (
     <>
-      <ambientLight intensity={nightMapOn ? 20 : 5} />
+      <ambientLight intensity={nightMapOn ? 10 : 5} />
       <pointLight ref={ambientLightRef} color="#f6f3ea" intensity={6} />
       <Stars
         radius={300}
@@ -114,13 +117,16 @@ export default function Earth() {
           map={nightMapOn ? nightMap : colorMap}
           normalMap={normalMap}
           metalness={0.8}
-          roughness={nightMapOn ? 1 : 0.7}
+          roughness={1}
         />
         <OrbitControls
           enableZoom={true}
           enableRotate={true}
           zoomSpeed={0.6}
           rotateSpeed={0.4}
+          minDistance={1.3}
+          maxDistance={2}
+          enablePan={false}
         />
       </mesh>
     </>

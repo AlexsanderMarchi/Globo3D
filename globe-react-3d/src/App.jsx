@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import "./App.css";
-import { Earth, Loading } from "./components";
+import { Earth, Loading, InfoCountry } from "./components";
 
 function App() {
   return (
@@ -11,6 +11,7 @@ function App() {
           <Earth />
         </Suspense>
       </Canvas>
+      <InfoCountry />
     </div>
   );
 }
