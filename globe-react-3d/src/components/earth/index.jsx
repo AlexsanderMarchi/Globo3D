@@ -28,6 +28,8 @@ export default function Earth() {
   const { camera } = useThree();
   const [nightMapOn, setNightMapOn] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [mouseDownPosition, setMouseDownPosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     if (selectedCountry) {
@@ -45,6 +47,27 @@ export default function Earth() {
       );
     }
   });
+
+  const handleMouseDown = (event) => {
+    setIsDragging(false);
+    setMouseDownPosition({ x: event.clientX, y: event.clientY });
+  };
+
+  const handleMouseMove = (event) => {
+    const moveThreshold = 5;
+    if (
+      Math.abs(event.clientX - mouseDownPosition.x) > moveThreshold ||
+      Math.abs(event.clientY - mouseDownPosition.y) > moveThreshold
+    ) {
+      setIsDragging(true);
+    }
+  };
+
+  const handleMouseUp = (event) => {
+    if (!isDragging) {
+      handleClick(event);
+    }
+  };
 
   const handleClick = (event) => {
     const raycaster = new THREE.Raycaster();
@@ -86,6 +109,18 @@ export default function Earth() {
     return { lat, lon };
   };
 
+  useEffect(() => {
+    const handleDocumentMouseUp = (event) => {
+      handleMouseUp(event);
+    };
+
+    document.addEventListener("mouseup", handleDocumentMouseUp);
+
+    return () => {
+      document.removeEventListener("mouseup", handleDocumentMouseUp);
+    };
+  }, [isDragging, mouseDownPosition]);
+
   return (
     <>
       <ambientLight intensity={nightMapOn ? 10 : 5} />
@@ -98,7 +133,11 @@ export default function Earth() {
         saturation={0}
         fade={true}
       />
-      <mesh ref={cloudsRef} onClick={handleClick}>
+      <mesh
+        ref={cloudsRef}
+        onPointerDown={handleMouseDown}
+        onPointerMove={handleMouseMove}
+      >
         <sphereGeometry args={[1.007, 32, 32]} />
         <meshPhongMaterial
           map={cloudsMap}
@@ -108,7 +147,11 @@ export default function Earth() {
           side={THREE.DoubleSide}
         />
       </mesh>
-      <mesh ref={earthRef} onClick={handleClick}>
+      <mesh
+        ref={earthRef}
+        onPointerDown={handleMouseDown}
+        onPointerMove={handleMouseMove}
+      >
         <sphereGeometry args={[1, 32, 32]} />
         <meshPhongMaterial specularMap={specularMap} />
         <meshStandardMaterial
