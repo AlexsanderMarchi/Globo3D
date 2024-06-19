@@ -24,12 +24,15 @@ export default function Earth() {
   );
   const earthRef = useRef();
   const cloudsRef = useRef();
+  const markerRef = useRef();
+
   const ambientLightRef = useRef();
   const { camera } = useThree();
   const [nightMapOn, setNightMapOn] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [mouseDownPosition, setMouseDownPosition] = useState({ x: 0, y: 0 });
+  const [markerPosition, setMarkerPosition] = useState(null);
 
   useEffect(() => {
     if (selectedCountry) {
@@ -45,6 +48,11 @@ export default function Earth() {
         camera.position.y,
         camera.position.z
       );
+    }
+
+    if (markerRef.current && markerPosition) {
+      markerRef.current.position.copy(markerPosition);
+      markerRef.current.visible = true;
     }
   });
 
@@ -82,6 +90,7 @@ export default function Earth() {
 
     if (intersects.length > 0) {
       const intersectionPoint = intersects[0].point;
+      setMarkerPosition(intersectionPoint);
 
       const latLong = pointToLatLong(intersectionPoint);
       setSelectedCountry(latLong);
@@ -169,6 +178,10 @@ export default function Earth() {
           maxDistance={2}
           enablePan={false}
         />
+      </mesh>
+      <mesh ref={markerRef} visible={false}>
+        <sphereGeometry args={[0.01, 32, 32]} />
+        <meshStandardMaterial color="red" />
       </mesh>
     </>
   );
