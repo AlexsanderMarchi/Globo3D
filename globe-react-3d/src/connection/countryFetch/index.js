@@ -9,7 +9,7 @@ const apiCountryFetched = create({
     const response = await apiCountryFetched.get(`/${countryName}`);
     if (response.data) {
         CountryStore.getState().countryFetchedStore(response.data);
-        console.log(CountryStore.getState().countryFetched);
+        console.log("Country: ",CountryStore.getState().countryFetched);
         return response.data;
       } else {
         console.log("Country information not found");

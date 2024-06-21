@@ -10,6 +10,7 @@ import EarthNightMap from "../../assets/textures/8k_earth_nightmap.jpg";
 import EarthNormalMap from "../../assets/textures/8k_earth_normal_map.jpg";
 import EarthSpecularMap from "../../assets/textures/8k_earth_specular_map.jpg";
 import { getDataForLat } from "../../connection";
+import NightEarthStore from "../../store/nightEarthStore";
 
 export default function Earth() {
   const [colorMap, normalMap, specularMap, cloudsMap, nightMap] = useLoader(
@@ -24,12 +25,21 @@ export default function Earth() {
   );
   const earthRef = useRef();
   const cloudsRef = useRef();
+  const markerRef = useRef();
+
   const ambientLightRef = useRef();
   const { camera } = useThree();
-  const [nightMapOn, setNightMapOn] = useState(false);
+  const [nightMapOn, setNightMapOn] = useState(null);
+  const { nightEarthState } = NightEarthStore((state) => state);
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [mouseDownPosition, setMouseDownPosition] = useState({ x: 0, y: 0 });
+  const [markerPosition, setMarkerPosition] = useState(null);
+
+  useEffect(() => {
+    setNightMapOn(nightEarthState);
+    console.log("Night value: ", nightEarthState);
+  }, [nightEarthState]);
 
   useEffect(() => {
     if (selectedCountry) {
@@ -41,10 +51,15 @@ export default function Earth() {
   useFrame(() => {
     if (ambientLightRef.current) {
       ambientLightRef.current.position.set(
-        camera.position.x - 0.3,
+        camera.position.x - 0.03,
         camera.position.y,
         camera.position.z
       );
+    }
+
+    if (markerRef.current && markerPosition) {
+      markerRef.current.position.copy(markerPosition);
+      markerRef.current.visible = true;
     }
   });
 
@@ -78,10 +93,11 @@ export default function Earth() {
 
     raycaster.setFromCamera(mouseVector, camera);
 
-    const intersects = raycaster.intersectObject(earthRef.current);
+    const intersects = raycaster.intersectObject(cloudsRef.current);
 
     if (intersects.length > 0) {
       const intersectionPoint = intersects[0].point;
+      setMarkerPosition(intersectionPoint);
 
       const latLong = pointToLatLong(intersectionPoint);
       setSelectedCountry(latLong);
@@ -123,8 +139,12 @@ export default function Earth() {
 
   return (
     <>
-      <ambientLight intensity={nightMapOn ? 10 : 5} />
-      <pointLight ref={ambientLightRef} color="#f6f3ea" intensity={6} />
+      <ambientLight intensity={nightMapOn ? 20 : 5} />
+      <pointLight
+        ref={ambientLightRef}
+        color="#f6f3ea"
+        intensity={nightMapOn ? 6 : 2}
+      />
       <Stars
         radius={300}
         depth={70}
@@ -141,7 +161,7 @@ export default function Earth() {
         <sphereGeometry args={[1.007, 32, 32]} />
         <meshPhongMaterial
           map={cloudsMap}
-          opacity={nightMapOn ? 0.01 : 0.3}
+          opacity={nightMapOn ? 0.017 : 0.3}
           depthWrite={true}
           transparent={true}
           side={THREE.DoubleSide}
@@ -157,18 +177,22 @@ export default function Earth() {
         <meshStandardMaterial
           map={nightMapOn ? nightMap : colorMap}
           normalMap={normalMap}
-          metalness={0.8}
-          roughness={1}
+          metalness={nightMapOn ? 0.9 : 0.8}
+          roughness={nightMapOn ? 1 : 1}
         />
         <OrbitControls
           enableZoom={true}
           enableRotate={true}
           zoomSpeed={0.6}
           rotateSpeed={0.4}
-          minDistance={1.3}
-          maxDistance={2}
+          minDistance={1.4}
+          maxDistance={3}
           enablePan={false}
         />
+      </mesh>
+      <mesh ref={markerRef} visible={false}>
+        <sphereGeometry args={[0.005, 25, 10]} />
+        <meshStandardMaterial color="red" />
       </mesh>
     </>
   );
