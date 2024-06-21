@@ -44,7 +44,7 @@ export default function Earth() {
   useFrame(() => {
     if (ambientLightRef.current) {
       ambientLightRef.current.position.set(
-        camera.position.x - 0.3,
+        camera.position.x - 0.03,
         camera.position.y,
         camera.position.z
       );
@@ -86,7 +86,7 @@ export default function Earth() {
 
     raycaster.setFromCamera(mouseVector, camera);
 
-    const intersects = raycaster.intersectObject(earthRef.current);
+    const intersects = raycaster.intersectObject(cloudsRef.current);
 
     if (intersects.length > 0) {
       const intersectionPoint = intersects[0].point;
@@ -133,7 +133,7 @@ export default function Earth() {
   return (
     <>
       <ambientLight intensity={nightMapOn ? 10 : 5} />
-      <pointLight ref={ambientLightRef} color="#f6f3ea" intensity={6} />
+      <pointLight ref={ambientLightRef} color="#f6f3ea" intensity={2} />
       <Stars
         radius={300}
         depth={70}
@@ -174,13 +174,13 @@ export default function Earth() {
           enableRotate={true}
           zoomSpeed={0.6}
           rotateSpeed={0.4}
-          minDistance={1.3}
-          maxDistance={2}
+          minDistance={1.4}
+          maxDistance={3}
           enablePan={false}
         />
       </mesh>
       <mesh ref={markerRef} visible={false}>
-        <sphereGeometry args={[0.01, 32, 32]} />
+        <sphereGeometry args={[0.005, 25, 10]} />
         <meshStandardMaterial color="red" />
       </mesh>
     </>

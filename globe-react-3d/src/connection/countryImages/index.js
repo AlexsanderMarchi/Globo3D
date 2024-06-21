@@ -15,7 +15,7 @@ const apiCountryImage = create({
 
     
         CountryStore.getState().countryImageStore(itemData);
-        console.log(CountryStore.getState().countryImages);
+        // console.log(CountryStore.getState().countryImages);
         return response.data;
       } else {
         console.log("Country information not found");
