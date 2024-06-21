@@ -38,6 +38,7 @@ export default function Earth() {
 
   useEffect(() => {
     setNightMapOn(nightEarthState);
+    console.log("Night value: ", nightEarthState);
   }, [nightEarthState]);
 
   useEffect(() => {
