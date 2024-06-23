@@ -1,12 +1,9 @@
 import { create } from "zustand";
 
-const CountryStore = create((set) => ({
+const CountryStore = create((set, get) => ({
   countryName: "",
   countryFetched: "",
-  countryImages: [],
   addCountryStore: (newCountry) => set({ countryName: newCountry }),
-  countryImageStore: (newCountryImages) =>
-    set({ countryImages: newCountryImages }),
   countryFetchedStore: (newCountryData) => {
     if (newCountryData.length > 0) {
       if (

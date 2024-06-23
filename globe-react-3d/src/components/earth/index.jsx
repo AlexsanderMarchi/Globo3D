@@ -38,7 +38,6 @@ export default function Earth() {
 
   useEffect(() => {
     setNightMapOn(nightEarthState);
-    console.log("Night value: ", nightEarthState);
   }, [nightEarthState]);
 
   useEffect(() => {
@@ -139,7 +138,7 @@ export default function Earth() {
 
   return (
     <>
-      <ambientLight intensity={nightMapOn ? 20 : 5} />
+      <ambientLight intensity={nightMapOn ? 40 : 5} />
       <pointLight
         ref={ambientLightRef}
         color="#f6f3ea"
@@ -177,8 +176,8 @@ export default function Earth() {
         <meshStandardMaterial
           map={nightMapOn ? nightMap : colorMap}
           normalMap={normalMap}
-          metalness={nightMapOn ? 0.9 : 0.8}
-          roughness={nightMapOn ? 1 : 1}
+          metalness={nightMapOn ? 0.87 : 0.8}
+          roughness={nightMapOn ? 2 : 1}
         />
         <OrbitControls
           enableZoom={true}
